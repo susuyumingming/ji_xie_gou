@@ -1,0 +1,26 @@
+# EIDE / ARM GCC 编译输出
+build/
+output/
+*.elf
+*.bin
+*.hex
+*.map
+*.axf
+*.o
+*.d
+*.i
+*.s
+
+# EIDE 工程缓存
+.eide/build/
+.eide/tmp/
+.eide/cache/
+*.eide.workspace
+
+# IDE、系统杂项
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+*.bak
+*.log
