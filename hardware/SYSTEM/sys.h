@@ -52,6 +52,8 @@ typedef uint8_t  u8;
 
 #include "zigbee.h"
 
+#include "debug_uart.h"
+
 /*舵机底层，里面有延时函数底层*/
 //#include "PWM.h"
 /*舵机应用层*/

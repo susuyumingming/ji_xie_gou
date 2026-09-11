@@ -124,7 +124,7 @@ int main(void)
   lv_init();                           	  // LVGL 初始化
 	lv_port_disp_init();                  	// 注册LVGL的显示任务
   lv_port_indev_init();                  // 注册LVGL的触屏检测任务
-   
+  debug_uart_board_init();
   HWT101_board_init();
 	printf("Zigbee_board_init success\r\n");
   JY61P_board_init();

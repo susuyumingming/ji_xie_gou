@@ -126,33 +126,6 @@ void Zigbee_Serial_SendString(char *String)
 	}
 }
 
-/**
-  * 函    数：自己封装的prinf函数
-  * 参    数：format 格式化字符串
-  * 参    数：... 可变的参数列表
-  * 返 回 值：无
-  */
-void Serial_Printf(char *format, ...)
-{
-	char String[100];				//定义字符数组
-	va_list arg;					//定义可变参数列表数据类型的变量arg
-	va_start(arg, format);			//从format开始，接收参数列表到arg变量
-	vsprintf(String, format, arg);	//使用vsprintf打印格式化字符串和参数列表到字符数组中
-	va_end(arg);					//结束变量arg
-	Zigbee_Serial_SendString(String);		//串口发送字符数组（字符串）
-}
-
-/**
-  * 函    数：使用printf需要重定向的底层函数
-  * 参    数：保持原始格式即可，无需变动
-  * 返 回 值：保持原始格式即可，无需变动
-  */
-int fputc(int ch, FILE *f)
-{
-	Zigbee_Serial_SendByte(ch);			//将printf的底层重定向到自己的发送字节函数
-	return ch;
-}
-
 void USART3_IRQHandler_FONCTION()                	//串口3中断服务程序
 {
 // 校验位错误 PE

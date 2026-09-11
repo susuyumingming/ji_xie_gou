@@ -141,7 +141,7 @@ uint32_t TF_Send_CMD(uint8_t CMDNum)
     return data;
 }
 //TF卡一帧数据为6byte   上电初始化复位TF卡  SPI的输入输出脚已经被外接上拉电阻 还有CS也被上拉
-void TF_RES_Init(void)
+uint8_t TF_RES_Init(void)
 {
     uint32_t data = 0;
     uint8_t num = 250;
@@ -175,7 +175,7 @@ L:
                     {
                           printf("SD-SPI V2.0 Init OK  2.7~3.3V!\n");
                           TF_Send_clocks(50);//时钟脉冲
-                        return;
+                        return 0;
                     }
                 }
             }
@@ -196,7 +196,7 @@ L:
                         if((data & 0xff) == 0x00)
                         {
                             printf("SD-SPI V1.0 Init OK!\n");
-                            return;
+                            return 0;
                         }
                     }
                 }
@@ -210,7 +210,7 @@ L:
                     if(data == 0x00)
                     {
                         printf("MMC-SPI Init OK!\n");
-                        return;
+                        return 0;
                     }
                     data = TF_Send_CMD(1);
                  }
@@ -232,6 +232,7 @@ L:
             printf("RES_ERROR\n");
         }
     }
+		return -1;
 }
  
 //读取块数据  一块读 512byte  返回0读取成功

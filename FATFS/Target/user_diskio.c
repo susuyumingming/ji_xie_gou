@@ -35,7 +35,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "ff_gen_drv.h"
-
+#include "sys.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 
@@ -82,6 +82,15 @@ DSTATUS USER_initialize (
 {
   /* USER CODE BEGIN INIT */
     Stat = STA_NOINIT;
+		if(pdrv != 0)
+    {
+        return Stat;
+    }
+		//调用你的SD初始化
+    if(TF_RES_Init() == 0)
+    {
+        Stat &= ~STA_NOINIT; //初始化成功，清除标志
+    }
     return Stat;
   /* USER CODE END INIT */
 }
@@ -117,7 +126,23 @@ DRESULT USER_read (
 )
 {
   /* USER CODE BEGIN READ */
-    return RES_OK;
+   if(pdrv != 0 || count == 0)
+	{
+			return RES_PARERR;
+	}
+	if(Stat & STA_NOINIT)
+	{
+			return RES_NOTRDY;
+	}
+	//调用你的多扇区读取函数
+	if(TF_ReadSector(sector, buff, count) == 1)
+	{
+			return RES_OK;
+	}
+	else
+	{
+			return RES_ERROR;
+	}
   /* USER CODE END READ */
 }
 
@@ -139,7 +164,22 @@ DRESULT USER_write (
 {
   /* USER CODE BEGIN WRITE */
   /* USER CODE HERE */
-    return RES_OK;
+	if(pdrv != 0 || count == 0)
+	{
+			return RES_PARERR;
+	}
+	if(Stat & STA_NOINIT)
+	{
+			return RES_NOTRDY;
+	}
+	if(TF_WriteSector(sector, (uint8_t *)buff, count) == 1)
+	{
+			return RES_OK;
+	}
+	else
+	{
+			return RES_ERROR;
+	}
   /* USER CODE END WRITE */
 }
 #endif /* _USE_WRITE == 1 */
@@ -159,8 +199,39 @@ DRESULT USER_ioctl (
 )
 {
   /* USER CODE BEGIN IOCTL */
-    DRESULT res = RES_ERROR;
-    return res;
+   DRESULT res = RES_ERROR;
+	if(pdrv != 0)
+	{
+			return RES_PARERR;
+	}
+	if(Stat & STA_NOINIT)
+	{
+			return RES_NOTRDY;
+	}
+	switch(cmd)
+	{
+			case GET_SECTOR_SIZE:
+					*(WORD*)buff = 512;
+					res = RES_OK;
+					break;
+			case GET_BLOCK_SIZE:
+					*(WORD*)buff = 1;
+					res = RES_OK;
+					break;
+			case CTRL_SYNC:
+					res = RES_OK;
+					break;
+			// 如果你需要f_mkfs格式化，必须实现GET_SECTOR_COUNT
+			case GET_SECTOR_COUNT:
+					// ?? 这里你需要自己写函数获取SD总扇区数量
+					// *(LBA_t *)buff = TF_GetTotalSector();
+					// res = RES_OK;
+					break;
+			default:
+					res = RES_PARERR;
+					break;
+	}
+	return res;
   /* USER CODE END IOCTL */
 }
 #endif /* _USE_IOCTL == 1 */

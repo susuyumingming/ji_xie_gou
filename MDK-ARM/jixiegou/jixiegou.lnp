@@ -266,6 +266,7 @@
 "jixiegou\key.o"
 "jixiegou\ps2.o"
 "jixiegou\vl53.o"
+"jixiegou\debug_uart.o"
 "jixiegou\as5600.o"
 "jixiegou\myi2c.o"
 "jixiegou\tf_sd.o"

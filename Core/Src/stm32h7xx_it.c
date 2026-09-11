@@ -279,6 +279,19 @@ void UART4_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles UART5 global interrupt.
+  */
+void UART5_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART5_IRQn 0 */
+	UART5_IRQHandler_FONCTION();
+  /* USER CODE END UART5_IRQn 0 */
+  /* USER CODE BEGIN UART5_IRQn 1 */
+
+  /* USER CODE END UART5_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM6 global interrupt, DAC1_CH1 and DAC1_CH2 underrun error interrupts.
   */
 void TIM6_DAC_IRQHandler(void)
