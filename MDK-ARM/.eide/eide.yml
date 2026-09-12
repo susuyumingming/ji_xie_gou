@@ -380,6 +380,11 @@ virtualFolder:
         - path: ../hardware/TF/Tf_SD.c
         - path: ../hardware/TF/Tf_SD.h
       folders: []
+    - name: modbus
+      files:
+        - path: ../hardware/modbus/modbus_slave.c
+        - path: ../hardware/modbus/modbus_slave.h
+      folders: []
     - name: ::CMSIS
       files: []
       folders: []
@@ -415,6 +420,7 @@ targets:
         - ../FATFS/Target
         - ../FATFS/App
         - ../Middlewares/Third_Party/FatFs/src
+        - ../hardware/modbus
         - .cmsis/include
         - RTE/_jixiegou
       libList: []

@@ -83,6 +83,8 @@ typedef uint8_t  u8;
 
 #include "Tf_SD.h"
 
+#include "modbus_slave.h"
+
 //#include "PID.h"
 
 #include <string.h> 

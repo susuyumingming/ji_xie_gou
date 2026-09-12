@@ -5,6 +5,7 @@
 __IO bool zigbee_rxFrameFlag = false;
 __IO uint8_t zigbee_rxCmd[ZIGBEE_FIFO_SIZE] = {0};// DMA接收缓冲区
 __IO uint8_t zigbee_rxCount;
+uint16_t modbus_rx_len = 0;
 uint8_t RxData;
 /**
 	* @brief   配置NVIC控制器
@@ -151,16 +152,20 @@ void USART3_IRQHandler_FONCTION()                	//串口3中断服务程序
    // 空闲中断处理
    if (LL_USART_IsActiveFlag_IDLE(USART3))
    {
-		zigbee_rxFrameFlag=true;
+//		zigbee_rxFrameFlag=true;
 		LL_USART_ClearFlag_IDLE(USART3);
-		// 调试：打印DMA当前传输计数，看有没有收到数据
-		// uint32_t cnt = LL_DMA_GetDataLength(DMA1, LL_DMA_STREAM_3);
-		// printf("DMA cnt: %d\r\n", cnt); // 如果收到数据，cnt会小于初始值ZIGBEE_FIFO_SIZE
 		// 关闭DMA，防止继续接收
 		LL_DMA_DisableStream(DMA1, LL_DMA_STREAM_3);
 		// 等待DMA完全关闭（可选，但更可靠）
 		while(LL_DMA_IsEnabledStream(DMA1, LL_DMA_STREAM_3));
+		// 获取本次收到的数据长度：总长度 - DMA剩余计数
+    uint32_t dma_remain = LL_DMA_GetDataLength(DMA1, LL_DMA_STREAM_3);
+    modbus_rx_len = MODBUS_RX_BUF_LEN - dma_remain;
 
+    if(modbus_rx_len > 0)
+    {
+        modbus_frame_ready = true;  //标记有一帧Modbus报文，交给主任务处理
+    }
 		// 清除 DMA 所有中断标志
 		LL_DMA_ClearFlag_TC3(DMA1);
 		LL_DMA_ClearFlag_HT3(DMA1);
@@ -169,10 +174,10 @@ void USART3_IRQHandler_FONCTION()                	//串口3中断服务程序
 		LL_DMA_ClearFlag_FE3(DMA1);
 
 		// 重新设置内存地址
-		LL_DMA_SetMemoryAddress(DMA1, LL_DMA_STREAM_3, (uint32_t)zigbee_rxCmd);
+		LL_DMA_SetMemoryAddress(DMA1, LL_DMA_STREAM_3, (uint32_t)modbus_rx_buf);
 
 		// 重新设置数据长度
-		LL_DMA_SetDataLength(DMA1, LL_DMA_STREAM_3, ZIGBEE_FIFO_SIZE);
+		LL_DMA_SetDataLength(DMA1, LL_DMA_STREAM_3, MODBUS_RX_BUF_LEN);
 
 		// 重新开启 DMA
 		LL_DMA_EnableStream(DMA1, LL_DMA_STREAM_3);
